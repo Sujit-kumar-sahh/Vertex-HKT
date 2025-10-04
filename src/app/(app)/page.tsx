@@ -12,11 +12,13 @@ import { RecentTransactions } from "@/components/dashboard/recent-transactions";
 import { SpendingChart } from "@/components/dashboard/spending-chart";
 import { UploadReceiptButton } from "@/components/upload-receipt-button";
 import { useAuth } from "@/hooks/use-auth";
-import { collection, query, where, getDocs } from "firebase/firestore";
+import { collection, query, getDocs } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { useEffect, useState } from "react";
 import { Transaction } from "@/lib/types";
 import { Skeleton } from "@/components/ui/skeleton";
+import { errorEmitter } from "@/lib/error-emitter";
+import { FirestorePermissionError } from "@/lib/errors";
 
 export default function DashboardPage() {
   const { user } = useAuth();
@@ -29,31 +31,43 @@ export default function DashboardPage() {
 
     const fetchData = async () => {
       setLoading(true);
-      const q = query(collection(db, `users/${user.uid}/transactions`));
-      const querySnapshot = await getDocs(q);
-      const transactions = querySnapshot.docs.map(doc => ({ ...doc.data() } as Omit<Transaction, 'id'>));
+      const collectionRef = collection(db, `users/${user.uid}/transactions`);
+      const q = query(collectionRef);
       
-      let totalSpent = 0;
-      let totalIncome = 0;
-      const categoryTotals: { [key: string]: number } = {};
+      try {
+        const querySnapshot = await getDocs(q);
+        const transactions = querySnapshot.docs.map(doc => ({ ...doc.data() } as Omit<Transaction, 'id'>));
+        
+        let totalSpent = 0;
+        let totalIncome = 0;
+        const categoryTotals: { [key: string]: number } = {};
 
-      transactions.forEach(t => {
-        if (t.type === 'expense') {
-          totalSpent += t.amount;
-          categoryTotals[t.category] = (categoryTotals[t.category] || 0) + t.amount;
-        } else {
-          totalIncome += t.amount;
-        }
-      });
+        transactions.forEach(t => {
+          if (t.type === 'expense') {
+            totalSpent += t.amount;
+            categoryTotals[t.category] = (categoryTotals[t.category] || 0) + t.amount;
+          } else {
+            totalIncome += t.amount;
+          }
+        });
 
-      setStats({ totalSpent, totalIncome, transactionCount: transactions.length });
-      
-      const formattedChartData = Object.entries(categoryTotals)
-        .map(([category, total]) => ({ category, total }))
-        .sort((a, b) => b.total - a.total);
-      
-      setChartData(formattedChartData);
-      setLoading(false);
+        setStats({ totalSpent, totalIncome, transactionCount: transactions.length });
+        
+        const formattedChartData = Object.entries(categoryTotals)
+          .map(([category, total]) => ({ category, total }))
+          .sort((a, b) => b.total - a.total);
+        
+        setChartData(formattedChartData);
+      } catch (error) {
+        console.error("Firestore getDocs error:", error);
+        const permissionError = new FirestorePermissionError({
+          path: collectionRef.path,
+          operation: 'list',
+        });
+        errorEmitter.emit('permission-error', permissionError);
+      } finally {
+        setLoading(false);
+      }
     };
 
     fetchData();
