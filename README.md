@@ -2,6 +2,15 @@
 
 This is a Next.js starter project built in Firebase Studio that has been customized to function as a dedicated AI Chat application.
 
+<img width="923" height="671" alt="Screenshot 2025-10-04 at 5 26 48 PM" src="https://github.com/user-attachments/assets/32a7bd1d-a2d1-4a5e-b25e-a63db4619eae" />
+
+<img width="941" height="635" alt="Screenshot 2025-10-04 at 5 30 04 PM" src="https://github.com/user-attachments/assets/5e87d457-c84b-41ad-b783-78bc915627ac" />
+
+<img width="935" height="569" alt="Screenshot 2025-10-04 at 5 25 55 PM" src="https://github.com/user-attachments/assets/fec65004-7f5a-4ea9-8d33-0c14fb927123" />
+
+<img width="940" height="591" alt="Screenshot 2025-10-04 at 5 30 29 PM" src="https://github.com/user-attachments/assets/408b1786-3ef8-4344-b59a-5e641e72febf" />
+
+
 ## Technical Stack
 
 This project is built with a modern, robust, and scalable technology stack. Below is a detailed breakdown of the key components used in the frontend, backend, and for the generative AI capabilities.
