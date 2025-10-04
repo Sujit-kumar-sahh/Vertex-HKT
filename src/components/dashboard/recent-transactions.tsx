@@ -18,18 +18,49 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { useAuth } from "@/hooks/use-auth";
 import { useCollection } from 'react-firebase-hooks/firestore';
-import { collection, query, orderBy, limit } from 'firebase/firestore';
+import { collection, query, orderBy, limit, onSnapshot } from 'firebase/firestore';
 import { db } from "@/lib/firebase";
 import { Transaction } from "@/lib/types";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useEffect, useState } from "react";
+import { errorEmitter } from "@/lib/error-emitter";
+import { FirestorePermissionError } from "@/lib/errors";
 
 export function RecentTransactions() {
   const { user } = useAuth();
-  const [value, loading, error] = useCollection(
-    user ? query(collection(db, `users/${user.uid}/transactions`), orderBy('createdAt', 'desc'), limit(5)) : null
-  );
+  const [transactions, setTransactions] = useState<Transaction[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  const transactions = value?.docs.map(doc => ({ id: doc.id, ...doc.data() } as Transaction)) || [];
+  useEffect(() => {
+    if (!user) {
+      setLoading(false);
+      return;
+    }
+
+    const q = query(collection(db, `users/${user.uid}/transactions`), orderBy('createdAt', 'desc'), limit(5));
+    
+    const unsubscribe = onSnapshot(q, 
+      (querySnapshot) => {
+        const trans: Transaction[] = [];
+        querySnapshot.forEach((doc) => {
+          trans.push({ id: doc.id, ...doc.data() } as Transaction);
+        });
+        setTransactions(trans);
+        setLoading(false);
+      },
+      (error) => {
+        console.error("Firestore snapshot error:", error);
+        const permissionError = new FirestorePermissionError({
+          path: `users/${user.uid}/transactions`,
+          operation: 'list',
+        });
+        errorEmitter.emit('permission-error', permissionError);
+        setLoading(false);
+      }
+    );
+
+    return () => unsubscribe();
+  }, [user]);
 
   return (
     <Card>
