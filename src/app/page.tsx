@@ -14,7 +14,7 @@ export default function LoginPage() {
 
   useEffect(() => {
     if (!loading && user) {
-      router.push('/dashboard');
+      router.push('/chat');
     }
   }, [user, loading, router]);
 
@@ -45,7 +45,7 @@ export default function LoginPage() {
       <Card className="w-full max-w-sm">
         <CardHeader className="text-center">
           <CardTitle className="font-headline text-2xl">Access Your Account</CardTitle>
-          <CardDescription>Sign in to manage your expenses and receipts.</CardDescription>
+          <CardDescription>Sign in to chat with our AI assistant.</CardDescription>
         </CardHeader>
         <CardContent>
           <Button onClick={signInWithGoogle} className="w-full" size="lg">

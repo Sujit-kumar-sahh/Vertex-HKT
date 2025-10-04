@@ -1,12 +1,3 @@
 import type { Timestamp } from 'firebase/firestore';
 
-export type Transaction = {
-  id: string;
-  amount: number;
-  date: string;
-  vendor: string;
-  category: string;
-  summary: string;
-  createdAt: Timestamp;
-  type: 'income' | 'expense';
-};
+// This file can be used to define types that are shared across the application.
