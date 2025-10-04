@@ -11,6 +11,12 @@ This is a Next.js starter project built in Firebase Studio that has been customi
 <img width="940" height="591" alt="Screenshot 2025-10-04 at 5 30 29 PM" src="https://github.com/user-attachments/assets/408b1786-3ef8-4344-b59a-5e641e72febf" />
 
 
+
+<img width="281" height="301" alt="Screenshot 2025-10-04 at 6 28 22 PM" src="https://github.com/user-attachments/assets/8a3b8de4-dc94-4c89-96cc-4a91e524ff88" />
+
+
+
+
 ## Technical Stack
 
 This project is built with a modern, robust, and scalable technology stack. Below is a detailed breakdown of the key components used in the frontend, backend, and for the generative AI capabilities.
